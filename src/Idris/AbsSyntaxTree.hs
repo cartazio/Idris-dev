@@ -782,11 +782,13 @@ prettyImp impl = prettySe 10
 
     prettySe p _ = text "test"
 
+    prettyArgS :: PArg -> Doc
     prettyArgS (PImp _ _ n tm) = prettyArgSi (n, tm)
     prettyArgS (PExp _ _ tm)   = prettyArgSe tm
     prettyArgS (PConstraint _ _ tm) = prettyArgSc tm
     prettyArgS (PTacImplicit _ _ n _ tm) = prettyArgSti (n, tm)
 
+    prettyArgSe:: PTerm -> Doc
     prettyArgSe arg = prettySe 0 arg
     prettyArgSi (n, val) = lbrace <> pretty n <+> text "=" <+> prettySe 10 val <> rbrace
     prettyArgSc val = lbrace <> lbrace <> prettySe 10 val <> rbrace <> rbrace
@@ -865,12 +867,13 @@ showImp impl tm = se 10 tm where
     se p (PDoBlock _) = "do block show not implemented"
     se p (PElabError s) = show s
 --     se p x = "Not implemented"
-
+    sArg:: PArg -> [Char]
     sArg (PImp _ _ n tm) = siArg (n, tm)
     sArg (PExp _ _ tm) = seArg tm
     sArg (PConstraint _ _ tm) = scArg tm
     sArg (PTacImplicit _ _ n _ tm) = stiArg (n, tm)
 
+    seArg:: PTerm -> [Char]
     seArg arg      = " " ++ se 0 arg
     siArg (n, val) = " {" ++ show n ++ " = " ++ se 10 val ++ "}"
     scArg val = " {{" ++ se 10 val ++ "}}"

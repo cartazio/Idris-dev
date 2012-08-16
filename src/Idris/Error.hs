@@ -1,8 +1,13 @@
-{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveDataTypeable, CPP #-}
 
 module Idris.Error where
 
-import Prelude hiding (catch)
+import Prelude  hiding (
+#if !MIN_VERSION_base(4,6,0)  
+              catch
+#endif              
+      )
+
 import Idris.AbsSyntax
 import Idris.Delaborate
 
@@ -16,6 +21,12 @@ import Control.Monad.State
 import System.IO.Error(isUserError, ioeGetErrorString)
 import Data.Char
 import Data.Typeable
+
+#if MIN_VERSION_base(4,6,0)
+
+import qualified Control.Exception.Base as E
+
+#endif
 
 iucheck :: Idris ()
 iucheck = do tit <- typeInType
@@ -32,7 +43,7 @@ report e
     | otherwise     = show e
 
 idrisCatch :: Idris a -> (SomeException -> Idris a) -> Idris a
-idrisCatch = catch
+idrisCatch a f = catch a f 
 
 data IdrisErr = IErr String
     deriving Typeable
