@@ -613,6 +613,8 @@ instance Show Const where
 showEnv env t = showEnv' env t False
 showEnvDbg env t = showEnv' env t True
 
+--prettyEnv::   (Eq a1,  Show a1, Pretty a1) =>
+--                             [(a1, Binder (TT a1))] -> a1 -> Binder (TT a1) -> Bool -> Doc
 prettyEnv env t = prettyEnv' env t False
   where
     prettyEnv' env t dbg = prettySe 10 env t dbg
@@ -644,7 +646,8 @@ prettyEnv env t = prettyEnv' env t False
     prettySe p env (Constant c) debug = pretty c
     prettySe p env Erased debug = text "[_]"
     prettySe p env (Set i) debug = text "Set" <+> (text . show $ i)
-
+    prettySb:: (Eq a1,  Show a1, Pretty a1) =>
+                 [(a1, Binder (TT a1))] -> a1 -> Binder (TT a1) -> Bool -> Doc
     prettySb env n (Lam t) = prettyB env "λ" "=>" n t
     prettySb env n (Hole t) = prettyB env "?defer" "." n t
     prettySb env n (Pi t) = prettyB env "(" ") ->" n t
@@ -675,6 +678,8 @@ showEnv' env t dbg = se 10 env t where
     se p env Erased = "[__]"
     se p env (Set i) = "Set " ++ show i
 
+    sb::(Eq a1, Show a1) =>
+                             [(a1, Binder (TT a1))] -> a1 -> Binder (TT a1) -> [Char]
     sb env n (Lam t)  = showb env "\\ " " => " n t
     sb env n (Hole t) = showb env "? " ". " n t
     sb env n (GHole t) = showb env "?defer " ". " n t
